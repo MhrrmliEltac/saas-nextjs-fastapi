@@ -51,3 +51,8 @@ def check_role(role: str) -> bool:
     if role == "ADMIN":
         return True
     return False
+
+def check_hr_role(role:str)->bool:
+    if role== 'HR':
+        return True
+    return False

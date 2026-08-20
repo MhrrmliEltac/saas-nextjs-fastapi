@@ -7,10 +7,19 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Bell, LogOut, Plus, Search } from "lucide-react";
+import { useRole } from "@/lib/store/role.store";
+import { useEffect } from "react";
 
 export function DashboardHeader() {
+  const roleStore = useRole();
   const { data: user, isLoading } = useAuthMe();
   const logout = useAuthLogout();
+
+  useEffect(() => {
+    if (user?.role.name) {
+      roleStore.setRole(user.role.name);
+    }
+  }, [user]);
 
   return (
     <header className="flex items-center gap-4 border-b border-border/60 bg-background px-6 py-4 sm:px-10">

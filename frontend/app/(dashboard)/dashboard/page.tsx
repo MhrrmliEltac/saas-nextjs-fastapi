@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import { CalendarDays, Clock, TrendingUp, Users } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,22 +13,47 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { fetchRecentActivity } from "@/lib/mock/activity";
 import { weeklyActivity } from "@/lib/mock/weekly";
-
-const stats = [
-  { label: "Cəmi işçilər", value: "6", delta: "+2 bu ay", trend: "up" as const, icon: Users },
-  { label: "Bugünkü davamiyyət", value: "4/5", delta: "+8.3%", trend: "up" as const, icon: Clock },
-  { label: "Gözləyən məzuniyyətlər", value: "2", delta: null, trend: null, icon: CalendarDays },
-];
+import { useGetSummary } from "@/lib/queries/useSummary";
+import { useGetLog } from "@/lib/queries/useLog";
+import { useGetPendingLeave } from "@/lib/queries/useLeave";
+import { useRole } from "@/lib/store/role.store";
+import { leaveTypeLabels } from "@/constant/leave";
 
 const maxWeekly = Math.max(...weeklyActivity.map((point) => point.value));
 
 export default function DashboardPage() {
-  const { data: activity, isLoading } = useQuery({
-    queryKey: ["recent-activity"],
-    queryFn: fetchRecentActivity,
-  });
+  const roleStore = useRole();
+  const isAdmin = roleStore.role === "ADMIN";
+
+  const { data: activity, isLoading } = useGetLog(isAdmin);
+  const { data: summary } = useGetSummary();
+  const { data: pendingLeave, isLoading: isPendingLeaveLoading } =
+    useGetPendingLeave();
+
+  const stats = [
+    {
+      label: "Cəmi işçilər",
+      value: String(summary?.employee_count ?? 0),
+      delta: null,
+      trend: null,
+      icon: Users,
+    },
+    {
+      label: "Bugünkü davamiyyət",
+      value: "4/5",
+      delta: "+8.3%",
+      trend: "up" as const,
+      icon: Clock,
+    },
+    {
+      label: "Gözləyən məzuniyyətlər",
+      value: String(summary?.leave_pending_count ?? 0),
+      delta: null,
+      trend: null,
+      icon: CalendarDays,
+    },
+  ];
 
   return (
     <div>
@@ -82,7 +107,13 @@ export default function DashboardPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {isLoading ? (
+                {!isAdmin ? (
+                  <TableRow>
+                    <TableCell colSpan={4} className="py-6 text-center text-muted-foreground">
+                      Son fəaliyyəti görmək üçün admin icazəsi tələb olunur.
+                    </TableCell>
+                  </TableRow>
+                ) : isLoading ? (
                   <TableRow>
                     <TableCell colSpan={4} className="py-6 text-center text-muted-foreground">
                       Yüklənir...
@@ -141,6 +172,58 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      <Card className="mt-6">
+        <CardContent className="p-0">
+          <div className="flex items-center justify-between px-4 pt-4 pb-2">
+            <h2 className="text-sm font-semibold">Gözləyən məzuniyyətlər</h2>
+            <Link
+              href="/dashboard/leave"
+              className="text-xs text-muted-foreground hover:text-foreground"
+            >
+              Hamısına bax
+            </Link>
+          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>İşçi</TableHead>
+                <TableHead>Növ</TableHead>
+                <TableHead>Tarixlər</TableHead>
+                <TableHead>Gün</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {isPendingLeaveLoading ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="py-6 text-center text-muted-foreground">
+                    Yüklənir...
+                  </TableCell>
+                </TableRow>
+              ) : pendingLeave && pendingLeave.length > 0 ? (
+                pendingLeave.map((request) => (
+                  <TableRow key={request.id}>
+                    <TableCell className="font-medium">{request.employee}</TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {leaveTypeLabels[request.type]}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {request.start_leave} — {request.end_leave}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">{request.day}</TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={4} className="py-6 text-center text-muted-foreground">
+                    Gözləyən məzuniyyət yoxdur.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
 }

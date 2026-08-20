@@ -15,39 +15,67 @@ import {
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { useGetSummary } from "@/lib/queries/useSummary";
 
-const navGroups = [
-  {
-    label: "Ümumi",
-    items: [
-      { href: "/dashboard", label: "İdarə paneli", icon: LayoutDashboard },
-      { href: "/dashboard/employees", label: "İşçilər", icon: Users, badge: "6" },
-      { href: "/dashboard/departments", label: "Departamentlər", icon: Building2 },
-    ],
-  },
-  {
-    label: "Davamiyyət",
-    items: [
-      { href: "/dashboard/attendance", label: "Davamiyyət", icon: Clock },
-      { href: "/dashboard/leave", label: "Məzuniyyətlər", icon: CalendarDays, badge: "2" },
-    ],
-  },
-  {
-    label: "Maliyyə və inkişaf",
-    items: [
-      { href: "/dashboard/payroll", label: "Maaş", icon: Wallet },
-      { href: "/dashboard/performance", label: "Performans", icon: Award },
-      { href: "/dashboard/recruitment", label: "İşə qəbul", icon: Briefcase },
-    ],
-  },
-  {
-    label: "Dəstək",
-    items: [{ href: "/dashboard/settings", label: "Tənzimləmələr", icon: Settings }],
-  },
-];
+function getSidebarNav(badge: Record<string, number>) {
+  return [
+    {
+      label: "Ümumi",
+      items: [
+        { href: "/dashboard", label: "İdarə paneli", icon: LayoutDashboard },
+        {
+          href: "/dashboard/employees",
+          label: "İşçilər",
+          icon: Users,
+          badge: badge["employee"],
+        },
+        {
+          href: "/dashboard/departments",
+          label: "Departamentlər",
+          icon: Building2,
+        },
+      ],
+    },
+    {
+      label: "Davamiyyət",
+      items: [
+        { href: "/dashboard/attendance", label: "Davamiyyət", icon: Clock },
+        {
+          href: "/dashboard/leave",
+          label: "Məzuniyyətlər",
+          icon: CalendarDays,
+          badge: badge["leave"],
+        },
+      ],
+    },
+    {
+      label: "Maliyyə və inkişaf",
+      items: [
+        { href: "/dashboard/payroll", label: "Maaş", icon: Wallet },
+        { href: "/dashboard/performance", label: "Performans", icon: Award },
+        { href: "/dashboard/recruitment", label: "İşə qəbul", icon: Briefcase },
+      ],
+    },
+    {
+      label: "Dəstək",
+      items: [
+        { href: "/dashboard/settings", label: "Tənzimləmələr", icon: Settings },
+      ],
+    },
+  ];
+}
 
 export function SidebarNav() {
   const pathname = usePathname();
+
+  const { data: summary } = useGetSummary();
+
+  const badges: Record<string, number> = {
+    employee: summary?.employee_count ?? 0,
+    leave: summary?.leave_count ?? 0,
+  };
+
+  const navGroups = getSidebarNav(badges);
 
   return (
     <nav className="mt-8 space-y-6">
@@ -74,7 +102,9 @@ export function SidebarNav() {
                   <item.icon
                     className={cn(
                       "size-4 transition-colors",
-                      isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground",
+                      isActive
+                        ? "text-primary"
+                        : "text-muted-foreground group-hover:text-foreground",
                     )}
                   />
                   <span className="flex-1">{item.label}</span>

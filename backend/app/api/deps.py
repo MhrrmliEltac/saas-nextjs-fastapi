@@ -1,7 +1,7 @@
 import jwt
 from fastapi import Depends, HTTPException, Request, status
 
-from app.core.security import check_role, decode_token
+from app.core.security import check_role, check_hr_role, decode_token
 from app.models.user import User
 
 ACCESS_COOKIE_NAME = "access_token"
@@ -37,5 +37,16 @@ async def require_admin(current_user: User = Depends(get_current_user)) -> User:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Bu əməliyyat üçün ADMIN rolu tələb olunur",
+        )
+    return current_user
+
+
+async def require_hr_role(current_user: User = Depends(get_current_user)) -> User:
+    if not check_hr_role(current_user.role.name) and not check_role(
+        current_user.role.name
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Bu əməliyyat üçün HR və ya ADMIN rolu tələb olunur",
         )
     return current_user
