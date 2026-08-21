@@ -8,3 +8,8 @@ class ResponseLog(BaseModel):
     action: str
     target: str
     time: str
+
+
+class ResponseWeeklyActivity(BaseModel):
+    day: str
+    value: int

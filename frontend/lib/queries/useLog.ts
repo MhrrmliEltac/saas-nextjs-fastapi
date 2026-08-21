@@ -11,3 +11,13 @@ export const useGetLog = (enabled: boolean) => {
     enabled,
   });
 };
+
+export const useGetWeeklyActivity = () => {
+  return useQuery({
+    queryKey: ["log", "weekly"],
+    queryFn: logService.weekly,
+    staleTime: 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+    retry: false,
+  });
+};

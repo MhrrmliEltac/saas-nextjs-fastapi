@@ -1,7 +1,5 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
@@ -11,23 +9,35 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { fetchPayroll, payrollStatusLabels, payrollStatusStyles } from "@/lib/mock/payroll";
+import { useGetPayroll, useMarkPayrollPaid } from "@/lib/queries/usePayroll";
+import { payrollStatusLabels, payrollStatusStyles } from "@/constant/payroll";
+import { PayrollStatusEnum } from "@/types/payroll.types";
+import { useRole } from "@/lib/store/role.store";
+import { check_role } from "@/lib/helper/check_role";
+import { AddPayrollDialog } from "@/components/dashboard/payroll/add-payroll-dialog";
+import { DeletePayrollDialog } from "@/components/dashboard/payroll/delete-payroll-dialog";
 
 function formatMoney(amount: number) {
   return `${amount.toLocaleString("az-AZ")} ₼`;
 }
 
 export default function PayrollPage() {
-  const { data: records, isLoading } = useQuery({
-    queryKey: ["payroll"],
-    queryFn: fetchPayroll,
-  });
+  const roleStore = useRole();
+  const checkRole = check_role(roleStore.role);
+  const { data: records, isLoading } = useGetPayroll();
+  const markPaid = useMarkPayrollPaid();
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold tracking-tight">Maaş</h1>
-      <p className="mt-2 text-sm text-muted-foreground">Bu ayın maaş cədvəli.</p>
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Maaş</h1>
+          <p className="mt-2 text-sm text-muted-foreground">Bu ayın maaş cədvəli.</p>
+        </div>
+        {checkRole && <AddPayrollDialog />}
+      </div>
 
       <Card className="mt-6">
         <CardContent className="p-0">
@@ -40,28 +50,29 @@ export default function PayrollPage() {
                 <TableHead className="text-right">Bonus</TableHead>
                 <TableHead className="text-right">Xalis məbləğ</TableHead>
                 <TableHead>Status</TableHead>
+                {checkRole && <TableHead className="text-right">Əməliyyat</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="py-6 text-center text-muted-foreground">
+                  <TableCell colSpan={checkRole ? 7 : 6} className="py-6 text-center text-muted-foreground">
                     Yüklənir...
                   </TableCell>
                 </TableRow>
-              ) : (
-                records?.map((record) => (
+              ) : records && records.length > 0 ? (
+                records.map((record) => (
                   <TableRow key={record.id}>
                     <TableCell className="font-medium">{record.employee}</TableCell>
                     <TableCell className="text-muted-foreground">{record.position}</TableCell>
                     <TableCell className="text-right text-muted-foreground">
-                      {formatMoney(record.baseSalary)}
+                      {formatMoney(record.base_salary)}
                     </TableCell>
                     <TableCell className="text-right text-muted-foreground">
                       {formatMoney(record.bonus)}
                     </TableCell>
                     <TableCell className="text-right font-medium">
-                      {formatMoney(record.baseSalary + record.bonus)}
+                      {formatMoney(record.base_salary + record.bonus)}
                     </TableCell>
                     <TableCell>
                       <span
@@ -73,8 +84,31 @@ export default function PayrollPage() {
                         {payrollStatusLabels[record.status]}
                       </span>
                     </TableCell>
+                    {checkRole && (
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          {record.status === PayrollStatusEnum.PENDING && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              disabled={markPaid.isPending}
+                              onClick={() => markPaid.mutate(record.id)}
+                            >
+                              Ödə
+                            </Button>
+                          )}
+                          <DeletePayrollDialog record={record} />
+                        </div>
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={checkRole ? 7 : 6} className="py-6 text-center text-muted-foreground">
+                    Maaş qeydi yoxdur.
+                  </TableCell>
+                </TableRow>
               )}
             </TableBody>
           </Table>

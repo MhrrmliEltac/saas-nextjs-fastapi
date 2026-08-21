@@ -10,6 +10,10 @@ from app.api.routes import worker as worker_router
 from app.api.routes import leave as leave_router
 from app.api.routes import summary as summary_router
 from app.api.routes import log as log_router
+from app.api.routes import attendance as attendance_router
+from app.api.routes import payroll as payroll_router
+from app.api.routes import performance as performance_router
+from app.api.routes import recruitment as recruitment_router
 
 app = FastAPI()
 
@@ -28,6 +32,11 @@ app.include_router(worker_router.router, prefix="/worker", tags=["Worker"])
 app.include_router(leave_router.router, prefix="/leave", tags=["Leave"])
 app.include_router(summary_router.router, prefix="/summary", tags=["Summary"])
 app.include_router(log_router.router, prefix="/log", tags=["Log"])
+app.include_router(log_router.public_router, prefix="/log", tags=["Log"])
+app.include_router(attendance_router.router, prefix="/attendance", tags=["Attendance"])
+app.include_router(payroll_router.router, prefix="/payroll", tags=["Payroll"])
+app.include_router(performance_router.router, prefix="/performance", tags=["Performance"])
+app.include_router(recruitment_router.router, prefix="/recruitment", tags=["Recruitment"])
 
 register_tortoise(
     app,
@@ -40,6 +49,10 @@ register_tortoise(
             "app.models.worker",
             "app.models.leave",
             "app.models.log",
+            "app.models.attendance",
+            "app.models.payroll",
+            "app.models.performance",
+            "app.models.recruitment",
         ]
     },
     generate_schemas=True,

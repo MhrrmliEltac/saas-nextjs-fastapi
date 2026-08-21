@@ -60,6 +60,7 @@ export const usePostLeave = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["leave"] });
       queryClient.invalidateQueries({ queryKey: ["summary"] });
+      queryClient.invalidateQueries({ queryKey: ["log"] });
       toast.success(data.message);
     },
   });
@@ -77,6 +78,7 @@ export const useUpdateLeave = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["leave"] });
       queryClient.invalidateQueries({ queryKey: ["summary"] });
+      queryClient.invalidateQueries({ queryKey: ["log"] });
       toast.success(data.message);
     },
   });
@@ -94,6 +96,7 @@ export const useUpdateStatusLeave = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["leave"] });
       queryClient.invalidateQueries({ queryKey: ["summary"] });
+      queryClient.invalidateQueries({ queryKey: ["log"] });
       toast.success(data.message);
     },
   });
@@ -110,6 +113,7 @@ export const useDeleteLeave = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["leave"] });
       queryClient.invalidateQueries({ queryKey: ["summary"] });
+      queryClient.invalidateQueries({ queryKey: ["log"] });
       toast.success(data.message);
     },
   });

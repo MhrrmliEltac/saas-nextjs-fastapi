@@ -5,3 +5,8 @@ export interface Log {
   target: string;
   time: string;
 }
+
+export interface WeeklyActivity {
+  day: string;
+  value: number;
+}

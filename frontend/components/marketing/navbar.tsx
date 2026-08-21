@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { LogoMark } from "@/components/icons/logo-mark";
 import { useAuthMeOptional } from "@/lib/queries/useAuthentication";
 
 export function Navbar() {
@@ -12,7 +13,10 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <Link href="/" className="text-lg font-semibold tracking-tight">
+        <Link href="/" className="flex items-center gap-2 text-lg font-semibold tracking-tight">
+          <span className="flex size-7 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+            <LogoMark className="size-4" />
+          </span>
           Orbit
         </Link>
 

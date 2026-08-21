@@ -54,6 +54,7 @@ export const usePostEmployee = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["employment"] });
       queryClient.invalidateQueries({ queryKey: ["summary"] });
+      queryClient.invalidateQueries({ queryKey: ["log"] });
       toast.success(data.message);
     },
   });
@@ -70,6 +71,7 @@ export const useUpdateEmployee = () => {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["employment"] });
+      queryClient.invalidateQueries({ queryKey: ["log"] });
       toast.success(data.message);
     },
   });
@@ -86,6 +88,7 @@ export const useDeleteEmployee = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["employment"] });
       queryClient.invalidateQueries({ queryKey: ["summary"] });
+      queryClient.invalidateQueries({ queryKey: ["log"] });
       toast.success(data.message);
     },
   });

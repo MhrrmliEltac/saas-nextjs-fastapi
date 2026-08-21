@@ -1,8 +1,9 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from app.models.log import Log
-from app.schemas.log import ResponseLog
+from app.schemas.log import ResponseLog, ResponseWeeklyActivity
 
 DEFAULT_LOG_LIMIT = 20
+WEEKDAY_LABELS = ["B.e", "Ç.a", "Çər", "C.a", "Cüm", "Şən", "B"]
 
 
 async def create_log(actor: str, action: str, target: str) -> None:
@@ -43,4 +44,25 @@ async def get_logs(limit: int = DEFAULT_LOG_LIMIT) -> list[ResponseLog]:
             time=_humanize(log.created_at),
         )
         for log in logs
+    ]
+
+
+async def get_weekly_activity() -> list[ResponseWeeklyActivity]:
+    logs = await Log.all().only("created_at")
+
+    counts = [0] * 7
+    if logs:
+        # mirrors _humanize: reuse an existing row's tzinfo to stay consistent
+        # with Tortoise's use_tz setting regardless of naive/aware storage.
+        now = datetime.now(logs[0].created_at.tzinfo)
+        monday = (now - timedelta(days=now.weekday())).replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
+        for log in logs:
+            if log.created_at >= monday:
+                counts[log.created_at.weekday()] += 1
+
+    return [
+        ResponseWeeklyActivity(day=label, value=count)
+        for label, count in zip(WEEKDAY_LABELS, counts)
     ]

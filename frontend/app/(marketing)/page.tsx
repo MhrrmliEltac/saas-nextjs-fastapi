@@ -51,25 +51,39 @@ const plans = [
 export default function LandingPage() {
   return (
     <>
-      <section className="mx-auto max-w-6xl px-6 pb-24 pt-24 text-center sm:pt-32">
-        <h1 className="mx-auto max-w-3xl text-4xl font-semibold tracking-tight text-balance sm:text-6xl">
-          Bütün HR proseslərini bir platformada idarə edin
-        </h1>
-        <p className="mx-auto mt-6 max-w-xl text-lg text-muted-foreground text-balance">
-          Orbit — işçilər, davamiyyət, məzuniyyət, maaş və işə qəbul üçün sadə, sürətli insan resursları idarəetmə sistemi.
-        </p>
-        <div className="mt-10 flex items-center justify-center gap-4">
-          <Link href="/register">
-            <Button size="lg">
-              Pulsuz başla
-              <ArrowRight className="size-4" />
-            </Button>
-          </Link>
-          <Link href="#features">
-            <Button size="lg" variant="outline">
-              Daha ətraflı
-            </Button>
-          </Link>
+      <section className="relative overflow-hidden">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 -top-40 -z-10 flex justify-center blur-3xl"
+        >
+          <div className="h-80 w-xl rounded-full bg-primary/20" />
+        </div>
+
+        <div className="mx-auto max-w-6xl px-6 pb-24 pt-24 text-center sm:pt-32">
+          <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-border/60 bg-muted/60 px-3 py-1 text-xs font-medium text-muted-foreground">
+            <span className="size-1.5 rounded-full bg-primary" />
+            HR idarəetməsi üçün yeni nəsil platforma
+          </div>
+
+          <h1 className="mx-auto max-w-3xl text-4xl font-semibold tracking-tight text-balance sm:text-6xl">
+            Bütün HR proseslərini bir platformada idarə edin
+          </h1>
+          <p className="mx-auto mt-6 max-w-xl text-lg text-muted-foreground text-balance">
+            Orbit — işçilər, davamiyyət, məzuniyyət, maaş və işə qəbul üçün sadə, sürətli insan resursları idarəetmə sistemi.
+          </p>
+          <div className="mt-10 flex items-center justify-center gap-4">
+            <Link href="/register">
+              <Button size="lg">
+                Pulsuz başla
+                <ArrowRight className="size-4" />
+              </Button>
+            </Link>
+            <Link href="#features">
+              <Button size="lg" variant="outline">
+                Daha ətraflı
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -78,7 +92,7 @@ export default function LandingPage() {
           <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
             {features.map((feature) => (
               <div key={feature.title}>
-                <div className="flex size-10 items-center justify-center rounded-lg bg-foreground text-background">
+                <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
                   <feature.icon className="size-5" />
                 </div>
                 <h3 className="mt-5 text-base font-semibold">{feature.title}</h3>
