@@ -129,6 +129,52 @@
   }
 }
 
+.marketing-theme {
+  --brand: oklch(0.531 0.192 262);
+  --brand-hover: oklch(0.47 0.19 262);
+  --brand-foreground: oklch(0.99 0 0);
+  --brand-soft: oklch(0.93 0.045 262);
+  --cream: oklch(0.969 0.009 76);
+  --cream-soft: oklch(0.944 0.012 76);
+  --ink: oklch(0.16 0.015 262);
+  --ink-muted: oklch(0.48 0.018 262);
+  --ink-faint: oklch(0.62 0.015 262);
+  --hairline: oklch(0.16 0.015 262 / 8%);
+  background-color: var(--cream);
+  color: var(--ink);
+}
+
+@supports (animation-timeline: view()) {
+  .marketing-theme .parallax-left {
+    animation: marketing-slide-left linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 45%;
+  }
+  .marketing-theme .parallax-right {
+    animation: marketing-slide-right linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 45%;
+  }
+}
+
+@keyframes marketing-slide-left {
+  from {
+    transform: translateX(-7%) rotate(-1.2deg);
+  }
+  to {
+    transform: translateX(0) rotate(0deg);
+  }
+}
+
+@keyframes marketing-slide-right {
+  from {
+    transform: translateX(7%) rotate(1.2deg);
+  }
+  to {
+    transform: translateX(0) rotate(0deg);
+  }
+}
+
 @layer utilities {
   .skeleton-shimmer::after {
     content: "";
